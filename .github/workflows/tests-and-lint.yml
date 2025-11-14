@@ -30,8 +30,4 @@ jobs:
     # Uncomment the unit tests when real tests are created
     #   - name: Run Tests
     #     run: npm test
-
-      - name: Run Tests (temporary)
-        run: npm run temp-test
-    
     
