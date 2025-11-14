@@ -1,9 +1,10 @@
-name: Deploy Frontend Admin to GitHub Pages
+name: Deploy Frontend Admin UI to GitHub Pages
 
 on:
   push:
-    branches:
-      - main
+    branches: [ "main", "dev" ]
+  pull_request:
+    branches: [ "main" , "dev"]
 
 permissions:
   contents: write

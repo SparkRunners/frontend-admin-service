@@ -1,0 +1,37 @@
+name: CI Checks - Frontend Admin UI code base
+
+on:
+  push:
+    branches:
+      - '**' 
+  pull_request:
+    branches:
+      - '**'
+
+jobs:
+  lint-and-test:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v5
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v5
+        with:
+          node-version: 22
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Run ESLint
+        run: npm run lint
+    
+    # Uncomment the unit tests when real tests are created
+    #   - name: Run Tests
+    #     run: npm test
+
+      - name: Run Tests (temporary)
+        run: npm run temp-test
+    
+    
