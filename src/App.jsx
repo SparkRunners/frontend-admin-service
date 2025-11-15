@@ -28,7 +28,7 @@ function App() {
       <p className="read-the-docs">
         Click on the Vite and React logos to learn more
       </p>
-      <h1>This text was added in the mounted file to test---</h1>
+      <h1>This text was added ++in the mounted file to test---</h1>
     </>
   )
 }
