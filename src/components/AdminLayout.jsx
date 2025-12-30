@@ -1,12 +1,17 @@
 import { Link, NavLink, Outlet, useNavigate } from "react-router-dom";
 import "./AdminLayout.css";
-import { clearToken } from "../api/token";
+import { clearToken, getToken, isLoggedIn } from "../api/token";
+import { decodeJwt } from "../api/jwt";
 
 export default function AdminLayout() {
     const navigate = useNavigate();
     const today = new Date().toISOString().slice(0, 10);
 
-    function handleLogout() {
+    const token = getToken();
+    const payload = token ? decodeJwt(token) : null;
+    const email = payload?.email || payload?.username || "";
+
+    function onLogout() {
         clearToken();
         navigate("/login", { replace: true });
     }
@@ -19,22 +24,24 @@ export default function AdminLayout() {
                     <p>Drift, fordon och kunder</p>
                 </div>
 
-                <div style={{ display: "flex", alignItems: "center", gap: "1rem" }}>
+                <div className="admin-header-right">
                     <div className="admin-date">{today}</div>
-                    <button
-                        onClick={handleLogout}
-                        style={{
-                            padding: "0.4rem 0.9rem",
-                            borderRadius: "999px",
-                            border: "none",
-                            background: "#ef4444",
-                            color: "#fff",
-                            cursor: "pointer",
-                            fontSize: "0.85rem"
-                        }}
-                    >
-                        Logga ut
-                    </button>
+
+                    {isLoggedIn() ? (
+                        <div className="admin-auth">
+                            <span className="admin-user">{email}</span>
+                            <button
+                                type="button"
+                                className="admin-logout"
+                                onClick={onLogout}
+                                >
+                            Logga ut
+                            </button>
+
+                        </div>
+                    ) : (
+                        <Link to="/login">Logga in</Link>
+                    )}
                 </div>
             </header>
 
@@ -42,14 +49,10 @@ export default function AdminLayout() {
                 <nav className="admin-nav">
                     <ul>
                         <li>
-                            <NavLink to="/" end>
-                                Dashboard
-                            </NavLink>
+                            <NavLink to="/" end>Dashboard</NavLink>
                         </li>
                         <li>
-                            <NavLink to="/scooters">
-                                Fordonsvy
-                            </NavLink>
+                            <NavLink to="/scooters">Fordonsvy</NavLink>
                         </li>
                         <li>
                             <Link to="/coming-soon">Kundvy (kommer senare)</Link>

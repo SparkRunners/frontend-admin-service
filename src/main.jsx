@@ -7,9 +7,7 @@ import "./index.css";
 const basename = import.meta.env.VITE_BASENAME || "/";
 
 ReactDOM.createRoot(document.getElementById("root")).render(
-    <React.StrictMode>
-        <BrowserRouter basename={basename}>
-            <App />
-        </BrowserRouter>
-    </React.StrictMode>
+    <BrowserRouter basename={basename}>
+        <App />
+    </BrowserRouter>
 );
