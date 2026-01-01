@@ -1,0 +1,14 @@
+node_modules
+dist
+build
+.cache
+.vite
+coverage
+.DS_Store
+.git
+.gitignore
+README.md
+npm-debug.log*
+yarn-error.log*
+.env
+.env.*

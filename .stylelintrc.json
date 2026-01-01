@@ -1,0 +1,19 @@
+{
+  "extends": [
+    "stylelint-config-standard",
+    "stylelint-config-prettier"
+  ],
+  "ignoreFiles": [
+    "**/*.js",
+    "**/*.jsx",
+    "**/*.ts",
+    "**/*.tsx",
+    "node_modules/**",
+    "dist/**"
+  ],
+  "rules": {
+    "no-empty-source": null,
+    "selector-class-pattern": null,
+    "font-family-no-missing-generic-family-keyword": null
+  }
+}
