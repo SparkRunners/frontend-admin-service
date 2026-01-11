@@ -1,6 +1,6 @@
 import { useEffect } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
-import { setToken } from "../api/token";
+import { setToken} from "../auth/token";
 
 export default function OAuthCallback() {
     const nav = useNavigate();

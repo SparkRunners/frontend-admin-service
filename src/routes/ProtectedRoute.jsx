@@ -1,5 +1,5 @@
 import { Navigate, Outlet, useLocation } from "react-router-dom";
-import { isLoggedIn } from "../api/token";
+import { isLoggedIn} from "../auth/token";
 
 export default function ProtectedRoute() {
     const location = useLocation();

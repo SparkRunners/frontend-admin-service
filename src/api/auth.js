@@ -1,4 +1,4 @@
-import { setToken } from "./token";
+import {setToken} from "../auth/token";
 
 const AUTH_URL = import.meta.env.VITE_AUTH_URL;
 
@@ -33,7 +33,7 @@ export async function register(username, email, password, role) {
   const payload = { username, email, password };
 
   if (role) {
-    payload.role = Array.isArray(role) ? role : [role]; // <-- force array
+    payload.role = Array.isArray(role) ? role : [role];
   }
 
   const res = await fetch(`${AUTH_URL}/auth/register`, {

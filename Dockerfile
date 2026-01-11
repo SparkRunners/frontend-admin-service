@@ -5,7 +5,7 @@ FROM node:22-alpine
 WORKDIR /app
 
 # Install dependencies
-RUN npm install
+#RUN npm install
 
 # Expose Vite dev server port
 EXPOSE 5173
