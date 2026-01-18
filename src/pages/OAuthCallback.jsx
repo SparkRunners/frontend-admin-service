@@ -3,41 +3,41 @@ import { useNavigate } from "react-router-dom";
 import { setTokens } from "../auth/token";
 
 function parseParams() {
-    const hash = window.location.hash.startsWith("#") ? window.location.hash.slice(1) : "";
-    const query = window.location.search.startsWith("?") ? window.location.search.slice(1) : "";
+  const hash = window.location.hash.startsWith("#") ? window.location.hash.slice(1) : "";
+  const query = window.location.search.startsWith("?") ? window.location.search.slice(1) : "";
 
-    const hashParams = new URLSearchParams(hash);
-    const queryParams = new URLSearchParams(query);
+  const hashParams = new URLSearchParams(hash);
+  const queryParams = new URLSearchParams(query);
 
-    const accessToken = hashParams.get("accessToken") || queryParams.get("accessToken");
-    const refreshToken = hashParams.get("refreshToken") || queryParams.get("refreshToken");
-    const error = hashParams.get("error") || queryParams.get("error");
+  const accessToken = hashParams.get("accessToken") || queryParams.get("accessToken");
+  const refreshToken = hashParams.get("refreshToken") || queryParams.get("refreshToken");
+  const error = hashParams.get("error") || queryParams.get("error");
 
-    return { accessToken, refreshToken, error };
+  return { accessToken, refreshToken, error };
+}
+
+export default function OAuthCallback() {
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    const { accessToken, refreshToken, error } = parseParams();
+
+    if (error) {
+      navigate(`/login?error=${encodeURIComponent(error)}`, { replace: true });
+      return;
     }
 
-    export default function OAuthCallback() {
-    const navigate = useNavigate();
+    if (!accessToken) {
+      navigate("/login?error=missing_token", { replace: true });
+      return;
+    }
 
-    useEffect(() => {
-        const { accessToken, refreshToken, error } = parseParams();
+    setTokens({ accessToken, refreshToken });
 
-        if (error) {
-        navigate(`/login?error=${encodeURIComponent(error)}`, { replace: true });
-        return;
-        }
+    window.history.replaceState({}, document.title, "/");
 
-        if (!accessToken) {
-        navigate("/login?error=missing_token", { replace: true });
-        return;
-        }
+    navigate("/", { replace: true });
+  }, [navigate]);
 
-        setTokens({ accessToken, refreshToken });
-
-        window.history.replaceState({}, document.title, "/");
-
-        navigate("/", { replace: true });
-    }, [navigate]);
-
-    return <p>Signing you in…</p>;
+  return <p>Signing you in…</p>;
 }
