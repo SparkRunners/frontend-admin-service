@@ -21,6 +21,9 @@
     "react-leaflet": "^5.0.0",
     "react-router-dom": "^7.10.1",
     "socket.io-client": "^4.8.3"
+<<<<<<< Updated upstream
+>>>>>>> Stashed changes
+=======
 >>>>>>> Stashed changes
   },
   "devDependencies": {

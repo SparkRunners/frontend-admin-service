@@ -1,38 +1,25 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
-import './App.css'
+import { Navigate, Route, Routes } from "react-router-dom";
 
-function App() {
-  const [count, setCount] = useState(0)
+import Login from "./pages/Login";
+import Register from "./pages/Register";
 
+import ProtectedRoute from "./routes/ProtectedRoute";
+import AdminLayout from "./components/AdminLayout";
+
+import Dashboard from "./pages/Dashboard";
+import ScootersPage from "./pages/ScootersPage";
+
+import StationsPage from "./features/stations/StationsPage";
+import ParkingZonesPage from "./features/parking/ParkingZonesPage";
+import RidesPage from "./features/rides/RidesPage";
+import PaymentsPage from "./features/payments/PaymentsPage";
+import AdminMapPage from "./features/map/AdminMapPage";
+
+import CustomersPage from "./features/customers/CustomersPage";
+import CustomerDetailPage from "./features/customers/CustomerDetailPage";
+
+export default function App() {
   return (
-<<<<<<< Updated upstream
-    <>
-      <div>
-        <a href="https://vite.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
-      </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.jsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
-      <h1>This text was added ++in the mounted file to test---</h1>
-    </>
-  )
-=======
     <Routes>
       <Route path="/login" element={<Login />} />
       <Route path="/register" element={<Register />} />
@@ -61,8 +48,4 @@ function App() {
       <Route path="*" element={<Navigate to="/dashboard" replace />} />
     </Routes>
   );
-  
->>>>>>> Stashed changes
 }
-
-export default App
