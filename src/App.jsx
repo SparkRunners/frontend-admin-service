@@ -7,6 +7,7 @@ function App() {
   const [count, setCount] = useState(0)
 
   return (
+<<<<<<< Updated upstream
     <>
       <div>
         <a href="https://vite.dev" target="_blank">
@@ -31,6 +32,37 @@ function App() {
       <h1>This text was added ++in the mounted file to test---</h1>
     </>
   )
+=======
+    <Routes>
+      <Route path="/login" element={<Login />} />
+      <Route path="/register" element={<Register />} />
+
+      <Route element={<ProtectedRoute />}>
+        <Route element={<AdminLayout />}>
+          <Route path="/" element={<Navigate to="/dashboard" replace />} />
+
+          <Route path="/dashboard" element={<Dashboard />} />
+          <Route path="/scooters" element={<ScootersPage />} />
+
+          <Route path="/stations" element={<StationsPage />} />
+          <Route path="/parking-zones" element={<ParkingZonesPage />} />
+          <Route path="/rides" element={<RidesPage />} />
+          <Route path="/payments" element={<PaymentsPage />} />
+          <Route path="/map" element={<AdminMapPage />} />
+
+          <Route path="/customers" element={<CustomersPage />} />
+          <Route path="/customers/:userId" element={<CustomerDetailPage />} />
+
+          <Route path="/admin/customers" element={<Navigate to="/customers" replace />} />
+          <Route path="/admin/customers/:userId" element={<CustomerDetailPage />} />
+        </Route>
+      </Route>
+
+      <Route path="*" element={<Navigate to="/dashboard" replace />} />
+    </Routes>
+  );
+  
+>>>>>>> Stashed changes
 }
 
 export default App

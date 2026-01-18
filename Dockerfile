@@ -9,6 +9,10 @@ RUN npm install
 
 # Expose Vite dev server port
 EXPOSE 5173
+COPY package*.json ./
+RUN npm ci
+COPY . .
+
 
 # Start development server with hot reload for persistent changes
 CMD ["npm", "run", "dev", "--", "--host"]
