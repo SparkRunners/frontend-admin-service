@@ -9,7 +9,15 @@ export function connectSimulationSocket({
   onDisconnect,
   onError,
 } = {}) {
-  const socket = io(API_URL, { transports: ["websocket"] });
+  const socket = io(API_URL, {
+    path: "/socket.io",
+    transports: ["polling", "websocket"],
+    withCredentials: false,
+    timeout: 20000,
+    reconnection: true,
+    reconnectionAttempts: 10,
+    reconnectionDelay: 500,
+  });
 
   socket.on("connect", () => onConnect?.(socket.id));
   socket.on("disconnect", (reason) => onDisconnect?.(reason));

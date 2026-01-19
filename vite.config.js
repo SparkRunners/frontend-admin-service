@@ -1,17 +1,7 @@
-import { defineConfig } from 'vite'
-import react from '@vitejs/plugin-react'
+import { defineConfig } from "vite";
+import react from "@vitejs/plugin-react";
 
-// https://vite.dev/config/
-export default defineConfig({
+export default defineConfig(({ command }) => ({
   plugins: [react()],
-  base: '/frontend-admin-service/',
-  server: {
-  proxy: {
-      "/auth": {
-        target: "http://localhost:3001",
-        changeOrigin: true,
-        rewrite: (path) => path.replace(/^\/auth/, ""),
-      },
-    },
-  },
-})
+  base: command === "serve" ? "/" : "/frontend-admin-service/",
+}));
