@@ -11,39 +11,21 @@ function normalizeAuthUsers(json) {
 export async function fetchCustomersAdmin() {
   if (USE_MOCK) return [];
 
-  const authUsers = normalizeAuthUsers(await authFetch("/users", { method: "GET" }));
-  const enriched = [];
-  for (const u of authUsers) {
-    try {
-      const biz = await apiFetch(`${endpoints.users}/${u._id}`, { method: "GET" });
+  const authUsers = normalizeAuthUsers(
+    await authFetch("/users", { method: "GET" })
+  );
 
-      enriched.push({
-        userId: u._id,
-        email: u.email,
-        name: biz?.name || u.username || "—",
-        balance: typeof biz?.balance === "number" ? biz.balance : 0,
-        active: typeof biz?.active === "boolean" ? biz.active : true,
-        createdAt: biz?.createdAt || null,
-        paymentModel: "unknown",
-        role: u.role,
-        username: u.username,
-      });
-    } catch {
-      enriched.push({
-        userId: u._id,
-        email: u.email,
-        name: u.username || "—",
-        balance: 0,
-        active: true,
-        createdAt: null,
-        paymentModel: "unknown",
-        role: u.role,
-        username: u.username,
-      });
-    }
-  }
-
-  return enriched;
+  return authUsers.map((u) => ({
+    userId: u._id,
+    email: u.email,
+    name: u.username || "—",
+    balance: 0,
+    active: true,
+    createdAt: u.createdAt || null,
+    paymentModel: "unknown",
+    role: u.role,
+    username: u.username,
+  }));
 }
 
 export async function fetchCustomerByIdAdmin(userId) {
@@ -67,7 +49,5 @@ export async function fetchCustomerTripsAdmin(userId) {
 
 export async function setCustomerActiveAdmin(userId, active) {
   if (!userId) throw new Error("userId saknas");
-
   return { ok: true, userId, active };
 }
-

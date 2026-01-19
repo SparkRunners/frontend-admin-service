@@ -3,5 +3,10 @@ import { endpoints } from "./endpoints";
 
 export async function fetchCities() {
   const data = await apiFetch(endpoints.cities);
-  return Array.isArray(data) ? data : (data.items || data.cities || []);
+
+  if (Array.isArray(data)) return data;
+  if (Array.isArray(data?.cities)) return data.cities;
+  if (Array.isArray(data?.items)) return data.items;
+
+  return [];
 }

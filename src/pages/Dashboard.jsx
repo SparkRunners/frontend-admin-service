@@ -1,6 +1,7 @@
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { fetchScooters, fetchStatus } from "../api/scooters";
 import { fetchCities } from "../api/cities";
+import { useLiveScooters } from "../api/useLiveScooters";
 
 function aggregateScooters(scooters) {
   const list = Array.isArray(scooters) ? scooters : [];
@@ -33,6 +34,9 @@ export default function Dashboard() {
   const [cities, setCities] = useState([]);
   const [health, setHealth] = useState(null);
 
+  const { scooters: scootersForUi, meta: liveMeta, lastUpdateText } =
+    useLiveScooters(scooters);
+
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
 
@@ -57,7 +61,7 @@ export default function Dashboard() {
 
         setHealth(statusRes);
         setScooters(Array.isArray(scootersRes) ? scootersRes : []);
-        setCities(Array.isArray(citiesRes) ? citiesRes : []);
+        setCities(citiesRes);
       } catch (err) {
         if (!alive) return;
         setError(err?.message || "Kunde inte hämta dashboard-data");
@@ -68,20 +72,41 @@ export default function Dashboard() {
     }
 
     load();
-
     return () => {
       alive = false;
     };
   }, []);
 
+  const { total, perStatus, perCity } = useMemo(
+    () => aggregateScooters(scootersForUi),
+    [scootersForUi]
+  );
+
   if (loading) return <p>Laddar dashboard...</p>;
   if (error) return <p style={{ color: "red" }}>{error}</p>;
-
-  const { total, perStatus, perCity } = aggregateScooters(scooters);
 
   return (
     <div>
       <h2>Admin Dashboard</h2>
+
+      {/* Optional: live status row */}
+      <div style={{ marginTop: 6, display: "flex", gap: 16, flexWrap: "wrap" }}>
+        <span>
+          Live:{" "}
+          <strong style={{ color: liveMeta.connected ? "green" : "crimson" }}>
+            {liveMeta.connected ? "Ansluten" : "Frånkopplad"}
+          </strong>
+        </span>
+        <span>
+          Uppdaterad: <strong>{lastUpdateText}</strong>
+        </span>
+        <span>
+          Totalt (live): <strong>{liveMeta.count || 0}</strong>
+        </span>
+        {liveMeta.error ? (
+          <span style={{ color: "crimson" }}>{liveMeta.error}</span>
+        ) : null}
+      </div>
 
       <div className="cards-grid" style={{ marginTop: "1rem" }}>
         <div className="card">
@@ -94,12 +119,23 @@ export default function Dashboard() {
 
         <div className="card">
           <h2>Aktiva städer</h2>
-          <div className="card-value">{cities.length}</div>
+          <div className="card-value">{cities.length > 0 ? (
+              <p style={{ marginTop: 8, opacity: 0.8 }}>
+                {cities.map((c) => c?.name).filter(Boolean).join(", ")}
+              </p>
+            ) : (
+              <p style={{ marginTop: 8, opacity: 0.7 }}>Inga städer hittades</p>
+            )}
+</div>
         </div>
 
         <div className="card">
           <h2>Totalt antal fordon</h2>
           <div className="card-value">{total}</div>
+          <p style={{ marginTop: 6, opacity: 0.75 }}>
+            Källa:{" "}
+            <strong>{liveMeta.count > 0 ? "Simulation" : "REST"}</strong>
+          </p>
         </div>
 
         <div className="card">

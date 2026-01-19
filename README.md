@@ -1,16 +1,107 @@
-# React + Vite
+# Frontend Admin Service VTEAM06
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+Admin UI for the SparkRunners system.
+Built with React + Vite, using React Router, Leaflet for maps and Socket.IO for live simulation data.
 
-Currently, two official plugins are available:
+---
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) (or [oxc](https://oxc.rs) when used in [rolldown-vite](https://vite.dev/guide/rolldown)) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+## Tech stack
 
-## React Compiler
+- React (Vite)
+- React Router
+- React Leaflet (OpenStreetMap)
+- Socket.IO Client (live simulation)
+- ESLint (linting)
+- Vitest + Testing Library (tests)
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+---
 
-## Expanding the ESLint configuration
+## Requirements
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+- Node.js (LTS recommended)
+- npm
+
+---
+
+## Installation
+
+npm install
+
+---
+
+## Environment variables
+
+Create a .env file in the project root:
+
+VITE_AUTH_BASE_URL=<http://localhost:3001>
+VITE_AUTH_URL=<http://localhost:3001>
+VITE_API_URL=<http://localhost:3002>
+
+VITE_API_URL should point to the backend API (user server / gateway).
+
+---
+
+## Run locally (development)
+
+npm run dev
+
+Open the URL printed by Vite (usually <http://localhost:5173>).
+
+---
+
+## Build
+
+npm run build
+
+Preview the production build:
+
+npm run preview
+
+---
+
+## Lint
+
+npm run lint
+
+---
+
+## Tests
+
+Run tests in watch mode (local development):
+
+npm run test
+
+Run tests once (CI-friendly):
+
+npm run test:run
+
+---
+
+## Live simulation data
+
+The admin UI can receive live scooter updates via Socket.IO.
+
+- When live data is available, the UI automatically switches to simulation data
+- When disconnected, it falls back to REST API data
+- Connection status and update time are shown in the Dashboard and Map views
+
+---
+
+## Project structure
+
+src/
+
+- pages/        Main pages (Dashboard, Scooters, Login, etc.)
+- features/     Feature areas (Map, Rides, Payments, Stations)
+- api/          API clients, Socket.IO, hooks
+- components/   Shared UI components
+- __tests__/    Vitest tests
+
+---
+
+## Notes
+
+- This project includes automated tests and linting
+- Suitable for CI pipelines
+- Frontend runs independently via Vite
+- Backend services are provided separately (Docker-based)

@@ -1,7 +1,7 @@
 const ACCESS_KEY = "admin_access_token";
 const REFRESH_KEY = "admin_refresh_token";
 
-export function setTokens({ accessToken, refreshToken }) {
+export function setTokens({ accessToken, refreshToken } = {}) {
   if (accessToken) localStorage.setItem(ACCESS_KEY, accessToken);
   if (refreshToken) localStorage.setItem(REFRESH_KEY, refreshToken);
 }

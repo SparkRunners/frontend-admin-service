@@ -38,44 +38,32 @@ async function parseResponse(res) {
 }
 
 export async function apiFetch(path, options = {}) {
+  const url = buildUrl(path, options.params);
+
   const token = getToken();
 
   const headers = {
     ...(options.headers || {}),
+    "Content-Type": "application/json",
   };
 
-  if (options.body && !headers["Content-Type"]) {
-    headers["Content-Type"] = "application/json";
-  }
-
-  if (token) {
-    headers.Authorization = `Bearer ${token}`;
-  }
-
-  const url = buildUrl(path, options.params);
+  if (token) headers.Authorization = `Bearer ${token}`;
 
   const res = await fetch(url, {
     ...options,
     headers,
   });
 
-  if (res.status === 401) {
-    clearToken();
-  }
-
   const data = await parseResponse(res);
 
   if (!res.ok) {
-    const msg =
-      data?.error ||
-      data?.message ||
-      (data?.raw ? String(data.raw).slice(0, 200) : "") ||
-      `Request failed (${res.status})`;
+    const msg = data?.error || data?.message || "Request failed";
 
-    const err = new Error(msg);
-    err.status = res.status;
-    err.data = data;
-    throw err;
+    if (res.status === 401) {
+      clearToken();
+    }
+
+    throw new Error(msg);
   }
 
   return data;
