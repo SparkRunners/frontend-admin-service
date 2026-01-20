@@ -3,14 +3,26 @@ import { useNavigate } from "react-router-dom";
 import { setTokens } from "../auth/token";
 
 function parseParams() {
-  const hash = window.location.hash.startsWith("#") ? window.location.hash.slice(1) : "";
-  const query = window.location.search.startsWith("?") ? window.location.search.slice(1) : "";
+  const hash = window.location.hash.startsWith("#")
+    ? window.location.hash.slice(1)
+    : "";
+  const query = window.location.search.startsWith("?")
+    ? window.location.search.slice(1)
+    : "";
 
   const hashParams = new URLSearchParams(hash);
   const queryParams = new URLSearchParams(query);
 
-  const accessToken = hashParams.get("accessToken") || queryParams.get("accessToken");
-  const refreshToken = hashParams.get("refreshToken") || queryParams.get("refreshToken");
+  
+  const accessToken =
+    hashParams.get("accessToken") ||
+    queryParams.get("accessToken") ||
+    hashParams.get("token") ||
+    queryParams.get("token");
+
+  const refreshToken =
+    hashParams.get("refreshToken") || queryParams.get("refreshToken");
+
   const error = hashParams.get("error") || queryParams.get("error");
 
   return { accessToken, refreshToken, error };
