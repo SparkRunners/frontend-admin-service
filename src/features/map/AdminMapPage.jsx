@@ -1,12 +1,22 @@
 import { useEffect, useMemo, useState } from "react";
-import { MapContainer, TileLayer, useMap, Marker, Polyline, Popup } from "react-leaflet";
+import {
+  MapContainer,
+  TileLayer,
+  useMap,
+  Marker,
+  Polyline,
+  Popup,
+} from "react-leaflet";
+import { useLocation, useSearchParams } from "react-router-dom";
+
 import { fetchScooters } from "../../api/scooters";
 import { fetchZones } from "../../api/zones";
+import { fetchPricing } from "../../api/pricing";
+import { connectSimulationSocket } from "../../api/simulationSocket";
+
 import ScootersLayer from "./layers/ScootersLayer";
 import StationsLayer from "./layers/StationsLayer";
 import ParkingZonesLayer from "./layers/ParkingZonesLayer";
-import { useLocation, useSearchParams } from "react-router-dom";
-import { connectSimulationSocket } from "../../api/simulationSocket";
 
 const CITIES = ["", "Stockholm", "Göteborg", "Malmö"];
 const STATUSES = ["", "Available", "In use", "Charging", "Maintenance", "Off"];
@@ -19,9 +29,11 @@ const CITY_CENTER = {
 
 function MapViewUpdater({ center, zoom }) {
   const map = useMap();
+
   useEffect(() => {
     map.setView(center, zoom, { animate: true });
   }, [center, zoom, map]);
+
   return null;
 }
 
@@ -61,6 +73,9 @@ export default function AdminMapPage() {
 
   const [scooters, setScooters] = useState([]);
   const [zones, setZones] = useState([]);
+
+  const [pricing, setPricing] = useState(null);
+  const [pricingError, setPricingError] = useState("");
 
   const [liveScooters, setLiveScooters] = useState([]);
   const [liveMeta, setLiveMeta] = useState({
@@ -110,6 +125,29 @@ export default function AdminMapPage() {
   }, [city, status]);
 
   useEffect(() => {
+    let alive = true;
+
+    async function loadPricing() {
+      setPricingError("");
+
+      try {
+        const data = await fetchPricing();
+        if (!alive) return;
+        setPricing(data || null);
+      } catch (err) {
+        if (!alive) return;
+        setPricing(null);
+        setPricingError(err?.message || "Kunde inte hämta prissättning");
+      }
+    }
+
+    loadPricing();
+    return () => {
+      alive = false;
+    };
+  }, []);
+
+  useEffect(() => {
     const disconnect = connectSimulationSocket({
       onConnect: () => {
         setLiveMeta((m) => ({ ...m, connected: true, error: "" }));
@@ -138,14 +176,22 @@ export default function AdminMapPage() {
   const baseZoom = city ? 18 : 13;
 
   const focusCenter = useMemo(() => {
-    if (focus === "station" && Number.isFinite(focusLat) && Number.isFinite(focusLng)) {
+    if (
+      focus === "station" &&
+      Number.isFinite(focusLat) &&
+      Number.isFinite(focusLng)
+    ) {
       return [focusLat, focusLng];
     }
     return center;
   }, [focus, focusLat, focusLng, center]);
 
   const zoom = useMemo(() => {
-    if (focus === "station" && Number.isFinite(focusLat) && Number.isFinite(focusLng)) {
+    if (
+      focus === "station" &&
+      Number.isFinite(focusLat) &&
+      Number.isFinite(focusLng)
+    ) {
       return 16;
     }
     return baseZoom;
@@ -156,7 +202,9 @@ export default function AdminMapPage() {
   }, [zones]);
 
   const stationZones = useMemo(() => {
-    return zones.filter((z) => z?.type === "charging" && z?.geometry?.type === "Point");
+    return zones.filter(
+      (z) => z?.type === "charging" && z?.geometry?.type === "Point",
+    );
   }, [zones]);
 
   const startPoint = normalizePoint(trip?.start);
@@ -181,7 +229,11 @@ export default function AdminMapPage() {
   }, [startPoint, endPoint, zoom]);
 
   const scootersSource = useMemo(() => {
-    const hasLive = liveMeta.connected && Array.isArray(liveScooters) && liveScooters.length > 0;
+    const hasLive =
+      liveMeta.connected &&
+      Array.isArray(liveScooters) &&
+      liveScooters.length > 0;
+
     return hasLive ? liveScooters : scooters;
   }, [liveMeta.connected, liveScooters, scooters]);
 
@@ -259,17 +311,43 @@ export default function AdminMapPage() {
             Zoner
           </label>
 
+          {/* Optional: show pricing in toolbar */}
+          {typeof pricing?.parkingFee === "number" ? (
+            <span>
+              Parkeringsavgift (utanför zon): <strong>{pricing.parkingFee} kr</strong>
+            </span>
+          ) : null}
+
           {/* Live simulation indicator */}
-          <div style={{ marginLeft: "auto", display: "flex", gap: "12px", flexWrap: "wrap", alignItems: "center" }}>
+          <div
+            style={{
+              marginLeft: "auto",
+              display: "flex",
+              gap: "12px",
+              flexWrap: "wrap",
+              alignItems: "center",
+            }}
+          >
             <span>
               Live:{" "}
               <strong style={{ color: liveMeta.connected ? "green" : "crimson" }}>
                 {liveMeta.connected ? "Ansluten" : "Frånkopplad"}
               </strong>
             </span>
-            <span>Uppdaterad: <strong>{lastUpdateText}</strong></span>
-            <span>Totalt: <strong>{liveMeta.count || 0}</strong></span>
-            {liveMeta.error ? <span style={{ color: "crimson" }}>{liveMeta.error}</span> : null}
+            <span>
+              Uppdaterad: <strong>{lastUpdateText}</strong>
+            </span>
+            <span>
+              Totalt: <strong>{liveMeta.count || 0}</strong>
+            </span>
+
+            {liveMeta.error ? (
+              <span style={{ color: "crimson" }}>{liveMeta.error}</span>
+            ) : null}
+
+            {pricingError ? (
+              <span style={{ color: "crimson" }}>{pricingError}</span>
+            ) : null}
           </div>
 
           {loading && <p style={{ margin: 0 }}>Laddar...</p>}
@@ -286,8 +364,17 @@ export default function AdminMapPage() {
             url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
           />
 
-          {showZones && <ParkingZonesLayer zones={polygonZones} />}
-          {showStations && <StationsLayer stations={stationZones} focusId={focusId} />}
+          {showZones && (
+            <ParkingZonesLayer
+              zones={polygonZones}
+              parkingFee={pricing?.parkingFee}
+            />
+          )}
+
+          {showStations && (
+            <StationsLayer stations={stationZones} focusId={focusId} />
+          )}
+
           {showScooters && <ScootersLayer scooters={scootersForMap} />}
 
           {startPoint && (
@@ -316,7 +403,7 @@ export default function AdminMapPage() {
             <Polyline
               positions={[
                 [startPoint.latitude, startPoint.longitude],
-                [endPoint.latitude, endPoint.longitude],
+                [startPoint.latitude, startPoint.longitude],
               ]}
             />
           )}

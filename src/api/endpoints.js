@@ -9,6 +9,7 @@ export const endpoints = {
   rentStop: "/api/v1/rent/stop",
   rentHistory: "/api/v1/rent/history",
   rentTrip: "/api/v1/rent/history",
+  pricing: "/api/v1/pricing",
 
   scooters: "/api/v1/scooters",
   scooterTelemetry: "/api/v1/scooters",
