@@ -81,7 +81,6 @@ export default function ScootersPage() {
     <div>
       <h2>Fordonsvy</h2>
 
-      {/* Optional: live status row */}
       <div style={{ marginTop: 6, display: "flex", gap: 16, flexWrap: "wrap" }}>
         <span>
           Live:{" "}
@@ -168,7 +167,7 @@ export default function ScootersPage() {
                       </span>
                     </td>
                     <td>
-                      {typeof s?.battery === "number" ? `${s.battery}%` : "—"}
+                    {typeof s?.battery === "number" ? `${Math.round(s.battery)}%` : "—"}
                     </td>
                     <td>
                       {typeof s?.speed === "number" ? `${s.speed} km/h` : "—"}
